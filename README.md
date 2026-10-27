@@ -1,3 +1,80 @@
+# CleanYourTV: Debloat Android TV and Google TV, Remove Ads and Install a Clean Launcher (No Root)
+
+**Remove bloatware, ads, sponsored rows and tracking from any Android TV or Google TV over Wi-Fi with ADB, then
+replace the ad-filled home screen with a clean, Apple TV style launcher.** No root, no USB cable, no firmware flashing.
+System apps are only disabled, never uninstalled, and one command restores everything.
+
+> **Credit:** this repository is a copy of [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv), released under
+> the MIT licence. All code, the launcher, the TV lists and the original README below were written by the CleanYourTV
+> authors and contributors, and the full commit history is kept. This is **not the official project**: the official
+> website is [cleanyour.tv](https://cleanyour.tv) and the upstream repo is where new TV lists, issues and pull requests go.
+> Shared by [Rameez Imdad](https://github.com/rameezimdad).
+
+## What it does
+
+| Step | What happens on the TV |
+|---|---|
+| 1. Back up | Saves the installed app list, disabled apps, system properties and settings before anything changes |
+| 2. Debloat | Disables manufacturer telemetry, ad and content services, retail demo apps and unused preloads with `pm disable-user` |
+| 3. Clean launcher | Builds and installs a light home screen: a dock of your apps, a clock, Inputs (HDMI, AV, Live TV), Wi-Fi and Settings |
+| 4. Restore | `tools/restore.sh` re-enables every disabled app and brings the stock home screen back |
+
+Works on Android TV and Google TV sets from Xiaomi, TCL, Hisense, Sony, Haier, OnePlus, Realme, Philips, Nvidia Shield
+and many more. It does not work on Samsung Tizen, LG webOS, Roku or Fire TV.
+
+## Quick start with Claude Code (or any AI coding agent)
+
+1. On the TV: **Settings > System > About**, press OK seven times on **Build**, then turn on **USB debugging** in
+   **Developer options** (and network debugging if your TV shows it).
+2. On a computer on the same Wi-Fi or LAN:
+   ```bash
+   git clone https://github.com/rameezimdad/cleanyourtv
+   cd cleanyourtv
+   ```
+3. Open the folder in [Claude Code](https://claude.com/product/claude-code), Codex or Gemini CLI, paste
+   [`PROMPT.md`](PROMPT.md) and add your TV model and IP address.
+4. Press **Allow** when the TV asks to allow USB debugging, answer which apps you use, and pick your dock apps.
+
+Doing it by hand instead: `TV_HOST=<tv ip> tools/disable.sh examples/<your-tv>/debloat.txt`, then
+`TV_HOST=<tv ip> launcher/build-and-install.sh` (needs JDK 17 and the Android SDK 34).
+
+## FAQ
+
+**How do I remove ads from Google TV without root?**
+Disable the ad and recommendation services with ADB over Wi-Fi and replace the stock home screen with the clean
+launcher in `launcher/`. No root and no firmware change are needed.
+
+**How do I debloat an Android TV with ADB?**
+Turn on USB debugging, connect over the network on port 5555 and run `tools/disable.sh` with the list for your
+model from [`examples/`](examples/README.md). Each package is disabled for user 0, never uninstalled.
+
+**Is it safe? Can I undo it?**
+Yes. Nothing is uninstalled, a backup is taken first, and `tools/restore.sh <same list>` re-enables everything.
+Core Android packages are protected: the scripts refuse a list that would disable them.
+
+**Which TVs are supported?**
+Android TV and Google TV sets. The launcher needs Android 8.0 (API 26) or newer. See the
+[TV list](examples/README.md) for tested models and their notes.
+
+**Can I replace the Google TV home screen with a custom launcher?**
+Yes. `launcher/build-and-install.sh` installs the launcher, makes it the default Home and only then disables the stock
+launcher. Dock apps, columns, hidden apps and wallpaper are set in a theme's `config.json`.
+
+**Does it block YouTube ads?**
+No. It removes the ads and sponsored rows on the home screen. Optional ad-blocking Private DNS is described below; it
+does not block YouTube ads either.
+
+**Does it work on Samsung, LG or Roku TVs?**
+No. Those are not Android. Use [cleanyour.tv/not-android](https://cleanyour.tv/not-android) to turn off tracking with
+the remote.
+
+**Tested here on:** a Haier MatrixTV BE (Google TV 14): debloated, clean launcher with a custom dock, rebooted and
+checked.
+
+---
+
+*The original CleanYourTV README follows, unchanged. "I" in it refers to the original author.*
+
 <p align="center">
   <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Your TV, minus the ads. Strip the bloatware from any Android TV or Google TV over Wi-Fi and replace the ad-filled home screen with a clean launcher that looks like an Apple TV. No root, no cable, nothing uninstalled, and a one-line restore." width="800"></a>
 </p>
